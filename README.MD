@@ -1,5 +1,5 @@
 # Interactive Timeline
-Interactive timeline that enables to add tasks and manipulate them on it.
+Interactive timeline that allows to add tasks and manipulate them on the timeline.
 
 Project under early development.
 ## Purpose

@@ -10,11 +10,12 @@ import UIKit
 
 class ViewController: UIViewController {
     
-    let timeline = UIView()
+    let timeline = TimelineView()
     
     override func loadView() {
         super.loadView()
         view.backgroundColor = .white
+        timeline.backgroundColor = .white
         view.addSubview(timeline)
         timeline.translatesAutoresizingMaskIntoConstraints = false
         timeline.topAnchor.constraint(equalTo: view.topAnchor).isActive = true

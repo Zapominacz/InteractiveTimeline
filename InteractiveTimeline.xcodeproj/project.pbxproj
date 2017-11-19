@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		184BEEC51FC17BD200E4B010 /* TimelineView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 184BEEC41FC17BD200E4B010 /* TimelineView.swift */; };
 		18F67D511FBD830700F0299F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F67D501FBD830700F0299F /* AppDelegate.swift */; };
 		18F67D531FBD830700F0299F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 18F67D521FBD830700F0299F /* ViewController.swift */; };
 		18F67D581FBD830700F0299F /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 18F67D571FBD830700F0299F /* Assets.xcassets */; };
@@ -33,6 +34,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		184BEEC41FC17BD200E4B010 /* TimelineView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TimelineView.swift; sourceTree = "<group>"; };
 		18F67D4D1FBD830700F0299F /* InteractiveTimeline.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = InteractiveTimeline.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		18F67D501FBD830700F0299F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		18F67D521FBD830700F0299F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -97,6 +99,7 @@
 			children = (
 				18F67D501FBD830700F0299F /* AppDelegate.swift */,
 				18F67D521FBD830700F0299F /* ViewController.swift */,
+				184BEEC41FC17BD200E4B010 /* TimelineView.swift */,
 				18F67D571FBD830700F0299F /* Assets.xcassets */,
 				18F67D591FBD830700F0299F /* LaunchScreen.storyboard */,
 				18F67D5C1FBD830700F0299F /* Info.plist */,
@@ -255,6 +258,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				184BEEC51FC17BD200E4B010 /* TimelineView.swift in Sources */,
 				18F67D531FBD830700F0299F /* ViewController.swift in Sources */,
 				18F67D511FBD830700F0299F /* AppDelegate.swift in Sources */,
 			);
