@@ -15,8 +15,12 @@ class TimelineView: UIView {
         drawTimeAxis(rect)
     }
     
+    private func getFiveMinuteDistance(_ availableWidth: CGFloat) -> CGFloat {
+        return availableWidth / 24.0 / 12.0
+    }
+    
     private func drawTimeAxis(_ rect: CGRect) {
-        let distance: CGFloat = 50.0
+        let distance: CGFloat = getFiveMinuteDistance(rect.width)
         let height: CGFloat = 25.0
         let thickness: CGFloat = 1.5
         let marigin: CGFloat = 10.0

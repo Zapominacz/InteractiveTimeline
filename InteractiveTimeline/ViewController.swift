@@ -26,7 +26,7 @@ class ViewController: UIViewController {
     private func createTimeline(in scrollView: UIScrollView) {
         timeline.backgroundColor = .white
         timeline.translatesAutoresizingMaskIntoConstraints = false
-        timeline.widthAnchor.constraint(equalToConstant: 1000).isActive = true
+        timeline.widthAnchor.constraint(equalToConstant: 5000).isActive = true
         timeline.heightAnchor.constraint(equalToConstant: 200).isActive = true
         timeline.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor).isActive = true
         timeline.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor).isActive = true
