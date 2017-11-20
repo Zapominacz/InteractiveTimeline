@@ -11,6 +11,19 @@ import UIKit
 class ViewController: UIViewController {
     
     let timeline = TimelineView()
+    var constraint: NSLayoutConstraint?
+    
+    override func loadView() {
+        super.loadView()
+        setupRootView()
+        let scrollView = setupScrollView(into: view)
+        scrollView.addSubview(timeline)
+        setupTimeline(in: scrollView)
+    }
+    
+    private func setupRootView() {
+        view.backgroundColor = .white
+    }
     
     private func setupScrollView(into view: UIView) -> UIScrollView {
         let scrollView = UIScrollView()
@@ -20,38 +33,19 @@ class ViewController: UIViewController {
         scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor).isActive = true
         scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor).isActive = true
         scrollView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        scrollView.showsVerticalScrollIndicator = false
+        scrollView.showsHorizontalScrollIndicator = false
         return scrollView
     }
     
-    private func createTimeline(in scrollView: UIScrollView) {
+    private func setupTimeline(in scrollView: UIScrollView) {
+        timeline.isUserInteractionEnabled = true
         timeline.backgroundColor = .white
         timeline.translatesAutoresizingMaskIntoConstraints = false
-        timeline.widthAnchor.constraint(equalToConstant: 5000).isActive = true
-        timeline.heightAnchor.constraint(equalToConstant: 200).isActive = true
         timeline.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor).isActive = true
         timeline.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor).isActive = true
         timeline.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor).isActive = true
         timeline.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor).isActive = true
+        timeline.prepare()
     }
-    
-    override func loadView() {
-        super.loadView()
-        view.backgroundColor = .white
-        let scrollView = setupScrollView(into: view)
-        scrollView.addSubview(timeline)
-        createTimeline(in: scrollView)
-    }
-
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        // Do any additional setup after loading the view, typically from a nib.
-    }
-
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
-    }
-
-
 }
-
