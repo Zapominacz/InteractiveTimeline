@@ -62,19 +62,23 @@ class TimelineView: UIView {
         let fiveMinutesDistance: CGFloat = getFiveMinutesDistance(rect.width)
         let stepsForHour = 12
         
-        let height: CGFloat = 10.0
-        let thickness: CGFloat = 1.5
-        let hourHeight: CGFloat = height * 1.5
+        let height: CGFloat = 7
+        let thickness: CGFloat = 1.2
+        let hourHeight: CGFloat = height * 2
         let marigin: CGFloat = 0.0
         let color = UIColor.gray
         let hourColor = UIColor.black
-        
+        let printMinutes = fiveMinutesDistance > 10.0
         
         var count = 0
         var startPoint = CGPoint(x: rect.maxX - marigin, y: timeBoxYPosition - marigin)
         repeat {
             count = (count + 1) % stepsForHour
             let isHour = count == 0
+            guard printMinutes || isHour else {
+                startPoint.x -= fiveMinutesDistance
+                continue
+            }
             let destinationPoint = CGPoint(x: startPoint.x, y: startPoint.y - (isHour ? hourHeight : height))
             let path = UIBezierPath()
             path.lineWidth = thickness
@@ -108,8 +112,9 @@ class TimelineView: UIView {
         paragraph.alignment = .center
         let attrs: [NSAttributedStringKey: Any] = [.font: UIFont.systemFont(ofSize: size, weight: .light), .paragraphStyle: paragraph]
         var rect = CGRect(x: allWidth - w/2 + dist / 12.0, y: height - h, width: w, height: h)
+        let usedDistence = dist > w ? dist : dist * 3
         repeat {
-            rect = rect.offsetBy(dx: -dist, dy: 0)
+            rect = rect.offsetBy(dx: -usedDistence, dy: 0)
             sampleLabel.draw(in: rect, withAttributes: attrs)
         } while rect.minX > 0
     }
