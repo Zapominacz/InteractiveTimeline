@@ -23,6 +23,7 @@ class TimelineView: UIView {
     override func draw(_ rect: CGRect) {
         super.draw(rect)
         drawTimeAxis(rect)
+        drawFreeTime(rect)
     }
     
     func prepare() {
@@ -55,22 +56,25 @@ class TimelineView: UIView {
         return availableWidth / 24.0 / 12.0
     }
     
+    let timeBoxYPosition: CGFloat = 60.0
+    
     private func drawTimeAxis(_ rect: CGRect) {
         let fiveMinutesDistance: CGFloat = getFiveMinutesDistance(rect.width)
         let stepsForHour = 12
         
-        let height: CGFloat = 25.0
+        let height: CGFloat = 10.0
         let thickness: CGFloat = 1.5
-        let marigin: CGFloat = 10.0
+        let marigin: CGFloat = 0.0
         let color = UIColor.gray
         let hourColor = UIColor.black
         
+        
         var count = 0
-        var startPoint = CGPoint(x: rect.maxX - marigin, y: rect.maxY - marigin)
+        var startPoint = CGPoint(x: rect.maxX - marigin, y: timeBoxYPosition - marigin)
         repeat {
             count = (count + 1) % stepsForHour
             let isHour = count == 0
-            let destinationPoint = CGPoint(x: startPoint.x, y: startPoint.y - (isHour ? height * 1.25 : height))
+            let destinationPoint = CGPoint(x: startPoint.x, y: startPoint.y - (isHour ? height * 1.5 : height))
             let path = UIBezierPath()
             path.lineWidth = thickness
             path.move(to: startPoint)
@@ -79,6 +83,7 @@ class TimelineView: UIView {
             isHour ? hourColor.set() : color.set()
             path.stroke()
         } while(startPoint.x >= 0)
+        addLabels()
 //
 //        let aPath = UIBezierPath()
 //        aPath.lineWidth = 10
@@ -91,6 +96,25 @@ class TimelineView: UIView {
 //        //        aPath.close()
 //        UIColor.red.set()
 //        aPath.stroke()
+    }
+    
+    private func addLabels() {
+        
+    }
+    
+    private func drawFreeTime(_ rect: CGRect) {
+        let height: CGFloat = 100.0
+        let marigin: CGFloat = timeBoxYPosition
+        let color = UIColor(white: 0.9, alpha: 1.0)
+        
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: 0, y: 0 + marigin))
+        path.addLine(to: CGPoint(x: 0, y: height + marigin))
+        path.addLine(to: CGPoint(x: rect.maxX, y: height + marigin))
+        path.addLine(to: CGPoint(x: rect.maxX, y: 0 + marigin))
+        path.close()
+        color.setFill()
+        path.fill()
     }
     
 }
