@@ -22,8 +22,8 @@ class TimelineView: UIView {
     
     override func draw(_ rect: CGRect) {
         super.draw(rect)
-        drawTimeAxis(rect)
         drawFreeTime(rect)
+        drawTimeAxis(rect)
     }
     
     func prepare() {
@@ -99,7 +99,12 @@ class TimelineView: UIView {
     }
     
     private func addLabels() {
+        let sampleLabel = "10:00"
+        let paragraphStyle = NSMutableParagraphStyle()
+        paragraphStyle.alignment = .center
         
+        let attrs: [NSAttributedStringKey: Any] = [.font: UIFont(name: "HelveticaNeue-Thin", size: 36)!, .paragraphStyle: paragraphStyle]
+        sampleLabel.draw(with: CGRect(x: 50, y: 50, width: 448, height: 448), options: .usesLineFragmentOrigin, attributes: attrs, context: nil)
     }
     
     private func drawFreeTime(_ rect: CGRect) {
