@@ -64,6 +64,7 @@ class TimelineView: UIView {
         
         let height: CGFloat = 10.0
         let thickness: CGFloat = 1.5
+        let hourHeight: CGFloat = height * 1.5
         let marigin: CGFloat = 0.0
         let color = UIColor.gray
         let hourColor = UIColor.black
@@ -74,7 +75,7 @@ class TimelineView: UIView {
         repeat {
             count = (count + 1) % stepsForHour
             let isHour = count == 0
-            let destinationPoint = CGPoint(x: startPoint.x, y: startPoint.y - (isHour ? height * 1.5 : height))
+            let destinationPoint = CGPoint(x: startPoint.x, y: startPoint.y - (isHour ? hourHeight : height))
             let path = UIBezierPath()
             path.lineWidth = thickness
             path.move(to: startPoint)
@@ -82,8 +83,8 @@ class TimelineView: UIView {
             startPoint.x -= fiveMinutesDistance
             isHour ? hourColor.set() : color.set()
             path.stroke()
-        } while(startPoint.x >= 0)
-        addLabels()
+        } while startPoint.x >= 0
+        addLabels(fiveMinutesDistance * CGFloat(stepsForHour), timeBoxYPosition - hourHeight, rect.maxX)
 //
 //        let aPath = UIBezierPath()
 //        aPath.lineWidth = 10
@@ -98,13 +99,19 @@ class TimelineView: UIView {
 //        aPath.stroke()
     }
     
-    private func addLabels() {
-        let sampleLabel = "10:00"
-        let paragraphStyle = NSMutableParagraphStyle()
-        paragraphStyle.alignment = .center
-        
-        let attrs: [NSAttributedStringKey: Any] = [.font: UIFont(name: "HelveticaNeue-Thin", size: 36)!, .paragraphStyle: paragraphStyle]
-        sampleLabel.draw(with: CGRect(x: 50, y: 50, width: 448, height: 448), options: .usesLineFragmentOrigin, attributes: attrs, context: nil)
+    private func addLabels(_ dist: CGFloat, _ height: CGFloat, _ allWidth: CGFloat) {
+        let w: CGFloat  = 30
+        let h: CGFloat  = 12
+        let size: CGFloat = 10
+        let sampleLabel: NSString = "11:11"
+        let attrs: [NSAttributedStringKey: Any] = [.font: UIFont.systemFont(ofSize: size, weight: .light)]
+        var rect = CGRect(x: allWidth - 3 + dist / 12.0, y: height - h, width: w, height: h)
+        var count = 20
+        repeat {
+            rect = rect.offsetBy(dx: -dist, dy: 0)
+            sampleLabel.draw(in: rect, withAttributes: attrs)
+            count -= 1
+        } while rect.minX > 0
     }
     
     private func drawFreeTime(_ rect: CGRect) {
