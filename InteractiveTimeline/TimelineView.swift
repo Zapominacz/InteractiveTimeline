@@ -17,6 +17,8 @@ class TimelineView: UIView {
         static let maxScale: CGFloat = 1.0
     }
     
+    weak var scrollView: UIScrollView?
+    
     var widthConstraint: NSLayoutConstraint!
     var scale: CGFloat = 1
     
@@ -26,29 +28,39 @@ class TimelineView: UIView {
         drawTimeAxis(rect)
     }
     
-    func prepare() {
+    func prepare(_ scrollView: UIScrollView? = nil) {
         heightAnchor.constraint(equalToConstant: Constants.timelineHeight).isActive = true
         widthConstraint = widthAnchor.constraint(equalToConstant: Constants.maximumTimelineWidth)
         widthConstraint?.isActive = true
         addPinchGestureRecognizer()
+        self.scrollView = scrollView
     }
     
     private func addPinchGestureRecognizer() {
         let gestureRecognizer = UIPinchGestureRecognizer(target: self, action: #selector(onTimelinePinched))
         addGestureRecognizer(gestureRecognizer)
     }
-
+    
     @objc
     private func onTimelinePinched(sender: UIPinchGestureRecognizer) {
         switch sender.state {
         case .began:
-            sender.scale = scale
+            sender.scale = max(Constants.minScale, min(Constants.maxScale, scale))
+            
         case .ended:
-            self.scale = sender.scale
+            scale = max(Constants.minScale, min(Constants.maxScale, sender.scale))
         default:
             let scale = max(Constants.minScale, min(Constants.maxScale, sender.scale))
-            widthConstraint?.constant = Constants.maximumTimelineWidth * scale
+            let newWidth = Constants.maximumTimelineWidth * scale
+            let currentScale = newWidth / (widthConstraint?.constant ?? 0)
+            widthConstraint?.constant = newWidth
             setNeedsDisplay()
+            guard let scrollView = scrollView, sender.numberOfTouches > 1 else { return }
+            let touchCenter = (sender.location(ofTouch: 0, in: self).x + sender.location(ofTouch: 1, in: self).x) / 2.0
+            let touchDistance = touchCenter - scrollView.contentOffset.x
+            var offset = scrollView.contentOffset
+            offset.x = touchCenter * currentScale - touchDistance
+            scrollView.setContentOffset(offset, animated: false)
         }
     }
     
@@ -107,15 +119,17 @@ class TimelineView: UIView {
         let w: CGFloat  = 30
         let h: CGFloat  = 12
         let size: CGFloat = 10
-        let sampleLabel: NSString = "11:11"
+        var hour = 23
         let paragraph = NSMutableParagraphStyle()
         paragraph.alignment = .center
         let attrs: [NSAttributedStringKey: Any] = [.font: UIFont.systemFont(ofSize: size, weight: .light), .paragraphStyle: paragraph]
         var rect = CGRect(x: allWidth - w/2 + dist / 12.0, y: height - h, width: w, height: h)
-        let usedDistence = dist > w ? dist : dist * 3
+        let jumpHour = dist > w ? 1 : 3
+        let usedDistance = CGFloat(jumpHour) * dist
         repeat {
-            rect = rect.offsetBy(dx: -usedDistence, dy: 0)
-            sampleLabel.draw(in: rect, withAttributes: attrs)
+            rect = rect.offsetBy(dx: -usedDistance, dy: 0)
+            hour -= jumpHour
+            "\(hour):00".draw(in: rect, withAttributes: attrs)
         } while rect.minX > 0
     }
     

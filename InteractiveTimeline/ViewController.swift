@@ -46,6 +46,6 @@ class ViewController: UIViewController {
         timeline.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor).isActive = true
         timeline.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor).isActive = true
         timeline.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor).isActive = true
-        timeline.prepare()
+        timeline.prepare(scrollView)
     }
 }
