@@ -104,13 +104,13 @@ class TimelineView: UIView {
         let h: CGFloat  = 12
         let size: CGFloat = 10
         let sampleLabel: NSString = "11:11"
-        let attrs: [NSAttributedStringKey: Any] = [.font: UIFont.systemFont(ofSize: size, weight: .light)]
-        var rect = CGRect(x: allWidth - 3 + dist / 12.0, y: height - h, width: w, height: h)
-        var count = 20
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+        let attrs: [NSAttributedStringKey: Any] = [.font: UIFont.systemFont(ofSize: size, weight: .light), .paragraphStyle: paragraph]
+        var rect = CGRect(x: allWidth - w/2 + dist / 12.0, y: height - h, width: w, height: h)
         repeat {
             rect = rect.offsetBy(dx: -dist, dy: 0)
             sampleLabel.draw(in: rect, withAttributes: attrs)
-            count -= 1
         } while rect.minX > 0
     }
     
