@@ -10,6 +10,15 @@ import UIKit
 
 class TimelineView: UIView {
     
+    enum Colors {
+        static let green = #colorLiteral(red: 0.262745098, green: 0.6274509804, blue: 0.2784313725, alpha: 1)
+        static let teal = #colorLiteral(red: 0.1490196078, green: 0.6509803922, blue: 0.6039215686, alpha: 1)
+        static let indigo = #colorLiteral(red: 0.3607843137, green: 0.4196078431, blue: 0.7529411765, alpha: 1)
+        static let red = #colorLiteral(red: 0.937254902, green: 0.3254901961, blue: 0.3137254902, alpha: 1)
+        static let amber = #colorLiteral(red: 1, green: 0.7921568627, blue: 0.1568627451, alpha: 1)
+        static let brown = #colorLiteral(red: 0.5529411765, green: 0.431372549, blue: 0.3882352941, alpha: 1)
+    }
+    
     enum Constants {
         static let timelineHeight: CGFloat = 200
         static let maximumTimelineWidth: CGFloat = 6000
@@ -26,6 +35,7 @@ class TimelineView: UIView {
         super.draw(rect)
         drawFreeTime(rect)
         drawTimeAxis(rect)
+        drawLoggedTime(rect)
     }
     
     func prepare(_ scrollView: UIScrollView? = nil) {
@@ -69,6 +79,7 @@ class TimelineView: UIView {
     }
     
     let timeBoxYPosition: CGFloat = 60.0
+    let timeBoxHeight: CGFloat = 100.0
     
     private func drawTimeAxis(_ rect: CGRect) {
         let fiveMinutesDistance: CGFloat = getFiveMinutesDistance(rect.width)
@@ -133,15 +144,43 @@ class TimelineView: UIView {
         } while rect.minX > 0
     }
     
+    private func drawLoggedTime(_ rect: CGRect) {
+        let marigin: CGFloat = timeBoxYPosition
+        let color = Colors.indigo
+        
+        let min: CGFloat = 100
+        let max: CGFloat = 500
+        
+        let path = UIBezierPath()
+        path.move(to: CGPoint(x: min, y: 0 + marigin))
+        path.addLine(to: CGPoint(x: min, y: timeBoxHeight + marigin))
+        path.addLine(to: CGPoint(x: max, y: timeBoxHeight + marigin))
+        path.addLine(to: CGPoint(x: max, y: 0 + marigin))
+        path.close()
+        color.setFill()
+        path.fill()
+        
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+        let size: CGFloat = 12
+        let font = UIFont.systemFont(ofSize: size, weight: .light)
+        
+        let h: CGFloat  = font.lineHeight * 2
+        let attrs: [NSAttributedStringKey: Any] = [.font: font,
+                                                   .paragraphStyle: paragraph, .foregroundColor: UIColor.white]
+        let textRect = CGRect(x: min, y: timeBoxYPosition + (timeBoxHeight - h) / 2, width: max - min, height: h)
+        "Wkurzanie się na Trawińskiego\n00:10".draw(in: textRect, withAttributes: attrs)
+    }
+    
     private func drawFreeTime(_ rect: CGRect) {
-        let height: CGFloat = 100.0
+        
         let marigin: CGFloat = timeBoxYPosition
         let color = UIColor(white: 0.9, alpha: 1.0)
         
         let path = UIBezierPath()
         path.move(to: CGPoint(x: 0, y: 0 + marigin))
-        path.addLine(to: CGPoint(x: 0, y: height + marigin))
-        path.addLine(to: CGPoint(x: rect.maxX, y: height + marigin))
+        path.addLine(to: CGPoint(x: 0, y: timeBoxHeight + marigin))
+        path.addLine(to: CGPoint(x: rect.maxX, y: timeBoxHeight + marigin))
         path.addLine(to: CGPoint(x: rect.maxX, y: 0 + marigin))
         path.close()
         color.setFill()
