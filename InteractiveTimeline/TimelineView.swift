@@ -39,7 +39,7 @@ class TimelineView: UIView {
         static let microDividerMultiplier: CGFloat = 0.5
         static let dividerThickness: CGFloat = 1.2
         static let minMicroDistance: CGFloat = 10.0
-        static let minLabelDistance: CGFloat = 90.0
+        static let minLabelDistance: CGFloat = 30.0
     }
     
     private typealias TimelineAreas = (axisArea: CGRect, plotArea: CGRect)
@@ -77,12 +77,15 @@ class TimelineView: UIView {
     private func drawTimeAxis(_ axisArea: CGRect) {
         let labelAxisArea = axisArea.divided(atDistance: Constants.axisFont.lineHeight + Constants.axisLabelsMarigin,
                                              from: CGRectEdge.minYEdge)
-        drawAxisLabels(labelAxisArea.slice)
         let majorDividerRect = labelAxisArea.remainder
         let minorDividerRect = majorDividerRect.divided(atDistance: Constants.microDividerMultiplier * majorDividerRect.height,
                                                         from: CGRectEdge.maxYEdge).slice
-        drawDividers(minorDividerRect, color: Colors.minorDivider, interval: 5 * 60)
+        let mictoDividerInterval: CGFloat = 5 * 60.0
+        if axisArea.width / CGFloat(Constants.axisLenghtSeconds) * mictoDividerInterval > Constants.minMicroDistance {
+            drawDividers(minorDividerRect, color: Colors.minorDivider, interval: 5 * 60)
+        }
         drawDividers(majorDividerRect, color: Colors.majorDivider, interval: 60 * 60)
+        drawAxisLabels(labelAxisArea.slice)
     }
     
     private func drawDividers(_ area: CGRect, color: UIColor, interval: TimeInterval, currentTime: Date = Date()) {
@@ -127,31 +130,31 @@ class TimelineView: UIView {
 //    } while computedDistance < 3000.0
     
     private func drawAxisLabels(_ axisLabelRect: CGRect, currentTime: Date = Date()) {
-//        let rect = axisLabelRect.insetBy(dx: 0, dy: Constants.axisLabelsMarigin)
-//        let labelWidth: CGFloat = 30
-//        let paragraph = NSMutableParagraphStyle()
-//        paragraph.alignment = .center
-//        let attrs: [NSAttributedStringKey: Any] = [.font: Constants.axisFont,
-//                                                   .paragraphStyle: paragraph,
-//                                                   .foregroundColor: Colors.axisFont]
-//        let interval = 60.0 * 60.0
-//        let maxTime = Date(timeIntervalSinceNow: Constants.axisFutureOffset)
-//        var cursorTime = maxTime.truncateTo(minutes: Int(interval / 60))
-//        var computedPosition: CGFloat = 0
-//        repeat {
-//            computedPosition = mapToPosition(timelineView: rect, time: cursorTime)
-//            cursorTime = cursorTime.addingTimeInterval(-interval)
-//            "\(hour):00".draw(in: rect, withAttributes: attrs)
-//        } while computedPosition.minX > 0
-//
-//        var rect = CGRect(x: allWidth - w/2 + dist / 12.0, y: height - h, width: w, height: h)
-//        let jumpHour = dist > w ? 1 : 3
-//        let usedDistance = CGFloat(jumpHour) * dist
-//        repeat {
-//            rect = rect.offsetBy(dx: -usedDistance, dy: 0)
-//            hour -= jumpHour
-//
-//        } while rect.minX > 0
+        let rect = axisLabelRect.insetBy(dx: 0, dy: Constants.axisLabelsMarigin / 2)
+        let calendar = Calendar.current
+        let labelWidth: CGFloat = 30
+        let paragraph = NSMutableParagraphStyle()
+        paragraph.alignment = .center
+        let attrs: [NSAttributedStringKey: Any] = [.font: Constants.axisFont,
+                                                   .paragraphStyle: paragraph,
+                                                   .foregroundColor: Colors.axisFont]
+        let interval = 60.0 * 60.0
+        let maxTime = Date(timeIntervalSinceNow: Constants.axisFutureOffset)
+        var cursorTime = maxTime.truncateTo(minutes: Int(interval / 60))
+        var nextPosition: CGFloat = 0
+        var currentPosition: CGFloat = CGFloat.infinity
+        repeat {
+            nextPosition = mapToPosition(timelineView: rect, time: cursorTime)
+            cursorTime = cursorTime.addingTimeInterval(-interval)
+            guard currentPosition - nextPosition >= Constants.minLabelDistance else {
+                continue
+            }
+            currentPosition = nextPosition
+            let labelRect = CGRect(x: currentPosition - labelWidth / 2,
+                                   y: rect.minY, width: labelWidth, height: rect.height)
+            let components = calendar.dateComponents([.hour, .minute], from: cursorTime)
+            "\(components.hour!):\(twoPlacePrecision(components.minute!))".draw(in: labelRect, withAttributes: attrs)
+        } while nextPosition > labelWidth / 2
     }
 
     func prepare(_ scrollView: UIScrollView? = nil) {
@@ -172,7 +175,6 @@ class TimelineView: UIView {
         switch sender.state {
         case .began:
             sender.scale = max(Constants.minScale, min(Constants.maxScale, scale))
-            
         case .ended:
             scale = max(Constants.minScale, min(Constants.maxScale, sender.scale))
         default:
@@ -188,10 +190,6 @@ class TimelineView: UIView {
             offset.x = touchCenter * currentScale - touchDistance
             scrollView.setContentOffset(offset, animated: false)
         }
-    }
-    
-    private func getMinuteDistance(_ availableWidth: CGFloat) -> CGFloat {
-        return availableWidth / 24.0 / 60.0
     }
     
 //    private func drawLoggedTime(_ rect: CGRect) {
