@@ -27,6 +27,7 @@ class TimelineView: UIView {
         static let empty = #colorLiteral(red: 0.9198423028, green: 0.9198423028, blue: 0.9198423028, alpha: 1)
         static let minorDivider = #colorLiteral(red: 0.7504680753, green: 0.7504680753, blue: 0.7504680753, alpha: 1)
         static let majorDivider = #colorLiteral(red: 0.2555047274, green: 0.2555047274, blue: 0.2555047274, alpha: 1)
+        static let currentTimeIndicator = #colorLiteral(red: 0.521568656, green: 0.1098039225, blue: 0.05098039284, alpha: 1)
         static let axisFont = #colorLiteral(red: 0.2596580386, green: 0.2596580386, blue: 0.2596580386, alpha: 1)
         static let plotFont = #colorLiteral(red: 1, green: 1, blue: 1, alpha: 1)
     }
@@ -70,6 +71,7 @@ class TimelineView: UIView {
         drawFreeTime(areas.plotArea)
         drawTimeAxis(areas.axisArea)
         drawLoggedTime(areas.plotArea)
+        drawCurrentTimeIndicator(areas.plotArea)
     }
     
     private func computeAreas(_ viewRect: CGRect) -> TimelineAreas {
@@ -87,6 +89,23 @@ class TimelineView: UIView {
         let minDate = currentTime.addingTimeInterval(Constants.axisFutureOffset - Constants.axisLenghtSeconds)
         let timeOffset = time.timeIntervalSince(minDate)
         return timelineView.minX + CGFloat(timeOffset) * secondWidth
+    }
+    
+    private func drawCurrentTimeIndicator(_ rect: CGRect, currentDate: Date = Date()) {
+        let position = mapToPosition(timelineView: rect, time: currentDate)
+        let divider = UIBezierPath()
+        divider.move(to: CGPoint(x: position, y: rect.minY))
+        divider.addLine(to: CGPoint(x: position, y: rect.maxY))
+        Colors.currentTimeIndicator.set()
+        divider.lineWidth = Constants.dividerThickness
+        divider.stroke()
+        let triangle = UIBezierPath()
+        triangle.move(to: CGPoint(x: position, y: rect.maxY + 4))
+        triangle.addLine(to: CGPoint(x: position - 5, y: rect.maxY))
+        triangle.addLine(to: CGPoint(x: position + 5, y: rect.maxY))
+        triangle.close()
+        triangle.fill()
+        
     }
 
     private func drawTimeAxis(_ axisArea: CGRect) {
