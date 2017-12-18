@@ -33,6 +33,7 @@ class TimelineView: UIView {
     }
     
     enum Constants {
+        static let viewUpdateInterval: TimeInterval = 30.0
         static let timelineMarigin: CGFloat = 20.0
         static let axisHeight: CGFloat = 30.0
         static let maxTimelineWidth: CGFloat = 6000
@@ -64,6 +65,7 @@ class TimelineView: UIView {
     
     var widthConstraint: NSLayoutConstraint!
     var scale: CGFloat = 1
+    var timer: Timer?
     
     override func draw(_ viewRect: CGRect) {
         super.draw(viewRect)
@@ -105,7 +107,6 @@ class TimelineView: UIView {
         triangle.addLine(to: CGPoint(x: position + 5, y: rect.maxY))
         triangle.close()
         triangle.fill()
-        
     }
 
     private func drawTimeAxis(_ axisArea: CGRect) {
@@ -166,12 +167,28 @@ class TimelineView: UIView {
         } while nextPosition > labelWidth / 2
     }
 
-    func prepare(_ scrollView: UIScrollView? = nil) {
+    func prepare(_ scrollView: UIScrollView? = nil, updateTime: Bool = false) {
         heightAnchor.constraint(equalToConstant: Constants.viewHeight).isActive = true
         widthConstraint = widthAnchor.constraint(equalToConstant: Constants.maxTimelineWidth)
         widthConstraint?.isActive = true
         addPinchGestureRecognizer()
         self.scrollView = scrollView
+        DispatchQueue.main.async { [weak self] in
+            guard let `self` = self else { return }
+            let startPosition = self.mapToPosition(timelineView: self.bounds, time: Date()) - UIScreen.main.bounds.width / 2
+            scrollView?.contentOffset = CGPoint(x: startPosition, y: scrollView?.contentOffset.y ?? 0)
+        }
+        if updateTime {
+            setupTimer()
+        }
+    }
+    
+    private func setupTimer() {
+        let timer = Timer(timeInterval: Constants.viewUpdateInterval, repeats: true) { [weak self] _ in
+            self?.setNeedsDisplay()
+        }
+        self.timer = timer
+        RunLoop.main.add(timer, forMode: .commonModes)
     }
     
     private func addPinchGestureRecognizer() {
