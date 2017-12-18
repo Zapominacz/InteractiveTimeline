@@ -8,6 +8,12 @@
 
 import UIKit
 
+struct TimelineBlock {
+    var from: Date
+    var to: Date?
+    var name: String
+}
+
 class TimelineView: UIView {
     
     enum Colors {
@@ -44,6 +50,7 @@ class TimelineView: UIView {
     
     private typealias TimelineAreas = (axisArea: CGRect, plotArea: CGRect)
     
+    
     private weak var scrollView: UIScrollView?
     
     var widthConstraint: NSLayoutConstraint!
@@ -54,7 +61,7 @@ class TimelineView: UIView {
         let areas = computeAreas(viewRect)
         drawFreeTime(areas.plotArea)
         drawTimeAxis(areas.axisArea)
-//        drawLoggedTime(viewRect)
+        drawLoggedTime(viewRect)
     }
     
     private func computeAreas(_ viewRect: CGRect) -> TimelineAreas {
@@ -104,31 +111,6 @@ class TimelineView: UIView {
         } while computedPosition > 0
     }
     
-//    let currentTime = Date()
-//    print(currentTime)
-//    var calendar = Calendar.current
-//    let maxTime = Date(timeIntervalSinceNow: 60.0 * 60.0)
-//    print(maxTime)
-//    var cursorTime = maxTime
-//    var components = calendar.dateComponents([.hour, .minute, .second], from: cursorTime)
-//    print(components)
-//    print(cursorTime)
-//    let truncatedMinutes = (components.minute! / 5) * 5
-//    cursorTime = calendar.date(bySettingHour: components.hour!, minute: truncatedMinutes, second: 0, of: cursorTime)!
-//    print(cursorTime)
-//    let timelineWidth = 6000.0
-//    // should show 24hours - 23 backwards and one onwards
-//    let oneSecondWidth = timelineWidth / 24.0 / 60.0 / 60.0
-//
-//    var computedDistance = 0.0
-//    repeat {
-//    let distance = maxTime.timeIntervalSince1970 - cursorTime.timeIntervalSince1970
-//    computedDistance = distance * oneSecondWidth
-//    let c = calendar.dateComponents([.hour, .minute], from: cursorTime)
-//    print("\(c.hour!):\(String(format: "%02d", c.minute!)) - \(timelineWidth - computedDistance) \(calendar.component(.minute, from: cursorTime) == 0)")
-//    cursorTime = cursorTime.addingTimeInterval(-60.0 * 5)
-//    } while computedDistance < 3000.0
-    
     private func drawAxisLabels(_ axisLabelRect: CGRect, currentTime: Date = Date()) {
         let rect = axisLabelRect.insetBy(dx: 0, dy: Constants.axisLabelsMarigin / 2)
         let calendar = Calendar.current
@@ -145,6 +127,7 @@ class TimelineView: UIView {
         var currentPosition: CGFloat = CGFloat.infinity
         repeat {
             nextPosition = mapToPosition(timelineView: rect, time: cursorTime)
+            let components = calendar.dateComponents([.hour, .minute], from: cursorTime)
             cursorTime = cursorTime.addingTimeInterval(-interval)
             guard currentPosition - nextPosition >= Constants.minLabelDistance else {
                 continue
@@ -152,7 +135,6 @@ class TimelineView: UIView {
             currentPosition = nextPosition
             let labelRect = CGRect(x: currentPosition - labelWidth / 2,
                                    y: rect.minY, width: labelWidth, height: rect.height)
-            let components = calendar.dateComponents([.hour, .minute], from: cursorTime)
             "\(components.hour!):\(twoPlacePrecision(components.minute!))".draw(in: labelRect, withAttributes: attrs)
         } while nextPosition > labelWidth / 2
     }
@@ -192,9 +174,9 @@ class TimelineView: UIView {
         }
     }
     
-//    private func drawLoggedTime(_ rect: CGRect) {
-//        let marigin: CGFloat = timeBoxYPosition
+    private func drawLoggedTime(_ rect: CGRect) {
 //        let color = Colors.indigo
+//        let start = Date.init(timeIntervalSinceNow: -)
 //
 //        let min: CGFloat = 100
 //        let max: CGFloat = 500
@@ -218,7 +200,7 @@ class TimelineView: UIView {
 //                                                   .paragraphStyle: paragraph, .foregroundColor: UIColor.white]
 //        let textRect = CGRect(x: min, y: timeBoxYPosition + (timeBoxHeight - h) / 2, width: max - min, height: h)
 //        "Wkurzanie się na Trawińskiego\n00:10".draw(in: textRect, withAttributes: attrs)
-//    }
+    }
     
     private func drawFreeTime(_ plotArea: CGRect) {
         Colors.empty.setFill()
