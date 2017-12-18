@@ -12,6 +12,7 @@ struct TimelineBlock {
     var from: Date
     var to: Date?
     var name: String
+    var color: UIColor
 }
 
 class TimelineView: UIView {
@@ -46,10 +47,17 @@ class TimelineView: UIView {
         static let dividerThickness: CGFloat = 1.2
         static let minMicroDistance: CGFloat = 10.0
         static let minLabelDistance: CGFloat = 30.0
+        static let minimumBlockWidthForLabel: CGFloat = 30.0
     }
     
     private typealias TimelineAreas = (axisArea: CGRect, plotArea: CGRect)
     
+    var data: [TimelineBlock] = [TimelineBlock(from: Date(timeIntervalSinceNow: -60 * 60 * 20.6),
+                                               to: Date(timeIntervalSinceNow: -60 * 60 * 20), name: "Lorem ipsum",
+                                               color: Colors.green),
+                                TimelineBlock(from: Date(timeIntervalSinceNow: -60 * 60 * 19),
+                                              to: Date(timeIntervalSinceNow: -60 * 60 * 15), name: "ZPI :/",
+                                              color: Colors.indigo)]
     
     private weak var scrollView: UIScrollView?
     
@@ -61,7 +69,7 @@ class TimelineView: UIView {
         let areas = computeAreas(viewRect)
         drawFreeTime(areas.plotArea)
         drawTimeAxis(areas.axisArea)
-        drawLoggedTime(viewRect)
+        drawLoggedTime(areas.plotArea)
     }
     
     private func computeAreas(_ viewRect: CGRect) -> TimelineAreas {
@@ -175,31 +183,26 @@ class TimelineView: UIView {
     }
     
     private func drawLoggedTime(_ rect: CGRect) {
-//        let color = Colors.indigo
-//        let start = Date.init(timeIntervalSinceNow: -)
-//
-//        let min: CGFloat = 100
-//        let max: CGFloat = 500
-//
-//        let path = UIBezierPath()
-//        path.move(to: CGPoint(x: min, y: 0 + marigin))
-//        path.addLine(to: CGPoint(x: min, y: timeBoxHeight + marigin))
-//        path.addLine(to: CGPoint(x: max, y: timeBoxHeight + marigin))
-//        path.addLine(to: CGPoint(x: max, y: 0 + marigin))
-//        path.close()
-//        color.setFill()
-//        path.fill()
-//
-//        let paragraph = NSMutableParagraphStyle()
-//        paragraph.alignment = .center
-//        let size: CGFloat = 12
-//        let font = UIFont.systemFont(ofSize: size, weight: .light)
-//
-//        let h: CGFloat  = font.lineHeight * 2
-//        let attrs: [NSAttributedStringKey: Any] = [.font: font,
-//                                                   .paragraphStyle: paragraph, .foregroundColor: UIColor.white]
-//        let textRect = CGRect(x: min, y: timeBoxYPosition + (timeBoxHeight - h) / 2, width: max - min, height: h)
-//        "Wkurzanie się na Trawińskiego\n00:10".draw(in: textRect, withAttributes: attrs)
+        let calendar = Calendar.current
+        data.forEach { block in
+            let fromPosition = mapToPosition(timelineView: rect, time: block.from)
+            let toPosition = mapToPosition(timelineView: rect, time: block.to ?? Date())
+            let blockWidth = toPosition - fromPosition
+            let blockRect = CGRect(x: fromPosition, y: rect.minY, width: blockWidth, height: rect.height)
+            let path = UIBezierPath(rect: blockRect)
+            block.color.setFill()
+            path.fill()
+            
+            guard blockWidth > Constants.minimumBlockWidthForLabel else { return }
+            let timeInterval = calendar.dateComponents([.hour, .minute], from: block.from, to: block.to ?? Date())
+            let paragraph = NSMutableParagraphStyle()
+            paragraph.alignment = .center
+            let attrs: [NSAttributedStringKey: Any] = [.font: Constants.plotFont,
+                                                       .paragraphStyle: paragraph, .foregroundColor: UIColor.white]
+            let labelRect = blockRect.insetBy(dx: 0, dy: (blockRect.height - Constants.plotFont.lineHeight * 2) / 2)
+            "\(block.name)\n\(timeInterval.hour!):\(twoPlacePrecision(timeInterval.minute!))"
+                .draw(in: labelRect, withAttributes: attrs)
+        }
     }
     
     private func drawFreeTime(_ plotArea: CGRect) {
