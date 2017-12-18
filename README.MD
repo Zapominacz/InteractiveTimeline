@@ -3,7 +3,7 @@ Interactive timeline that allows to add tasks and manipulate them on the timelin
 
 Project under early development.
 ## Purpose
-This project is intended to develop my iOS UI skills by creating similar version of timeline like in Hours app [https://www.hourstimetracking.com].
+This project is intended to develop my iOS UI skills by creating timeline inspired by Hours app [https://www.hourstimetracking.com].
 ## Development plan
 1. Define functionality of the timeline.
 2. Breakdown functionality into tasks.
